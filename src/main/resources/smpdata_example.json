@@ -1,0 +1,77 @@
+{
+  "teams": {
+    "uuid-4535-34535": {
+      "name": "TeamName",
+      "tag": "TAG",
+      "banner": {
+        "Color": 5,
+        "Patterns": []
+      },
+      "members": {
+        "uuid-4535-34535": 2,
+        "uuid-4535-34536": 1,
+        "uuid-4535-34537": 0
+      },
+      "friendlyFire": "false",
+      "allies": ["uuid-4535-34535"]
+    }
+  },
+  "players": {
+    "uuid-545-43543": {
+      "staff": false,
+      "pvp": false,
+      "activeBan": {
+        "until": -1,
+        "reason": "whatever"
+      },
+      "activeMute": {
+        "until": -1,
+        "reason": "whatever"
+      },
+      "kills": 10,
+      "deaths": 10
+    }
+  },
+  "punishment_log": [
+    {
+      "type": "mute",
+      "reason": "whatever",
+      "length": 1935925,
+      "at": 18769768585,
+      "by": "...",
+      "for": "aa"
+    },
+    {
+      "type": "warn",
+      "reason": "whatever",
+      "at": 18769768585,
+      "by": "...",
+      "for": "aa"
+    }
+  ],
+  "allies_packet": {
+    "active": [
+      {
+        "uuid": "uuid-856385",
+        "name": "teamname",
+        "tag": "tag"
+      }
+    ],
+    "invites": [
+      {
+        "uuid": "uuid-856385",
+        "name": "teamname",
+        "tag": "tag"
+      }
+    ]
+  },
+  "war_packet": {
+    "active": ["uuid-tguregie"],
+    "invites": [
+      {
+        "uuid": "uuid-856385",
+        "name": "teamname",
+        "tag": "tag"
+      },
+  }
+}

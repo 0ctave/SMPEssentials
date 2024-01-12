@@ -1,0 +1,8 @@
+build/
+.eclipse/
+.idea/
+.settings/
+./build/
+run/
+# Project exclude paths
+/.gradle/
