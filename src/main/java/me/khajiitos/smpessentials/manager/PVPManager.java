@@ -1,6 +1,7 @@
 package me.khajiitos.smpessentials.manager;
 
 import me.khajiitos.smpessentials.SMPEssentials;
+import me.khajiitos.smpessentials.data.PlayerDataInstance;
 import me.khajiitos.smpessentials.data.Team;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.StringTextComponent;
@@ -47,12 +48,22 @@ public class PVPManager {
                 return true;
             }
         }
-
         return hasPvpEnabled(player1) && hasPvpEnabled(player2);
     }
 
     public static boolean canAttackEachOther(ServerPlayerEntity player1, ServerPlayerEntity player2) {
         return canAttackEachOther(player1.getUUID(), player2.getUUID());
+    }
+
+
+    public static void processAttack(ServerPlayerEntity attacker, ServerPlayerEntity target) {
+        PVPManager.setInCombat(attacker);
+        PVPManager.setInCombat(target);
+
+        PlayerDataInstance attackerData = SMPEssentials.getData().getOrCreate(attacker.getUUID());
+        attackerData.spawnProtectionTicksLeft = 0;
+        attackerData.noobProtectionTicksLeft = 0;
+        SMPEssentials.getData().setDirty();
     }
 
     public static boolean hasPvpEnabled(UUID playerUUID) {
