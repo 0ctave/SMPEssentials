@@ -1,8 +1,15 @@
-build/
-.eclipse/
+#Project files
 .idea/
+.eclipse/
 .settings/
-./build/
-run/
-# Project exclude paths
-/.gradle/
+*.iml
+*.ipr
+*.iws
+/.shelf/
+
+/eclipse
+/libs
+/out
+/.gradle
+/build
+/run
