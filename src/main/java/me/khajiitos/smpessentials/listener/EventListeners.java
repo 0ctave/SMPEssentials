@@ -253,7 +253,7 @@ public class EventListeners {
         }
 
         if (e.getEntity() instanceof ServerPlayerEntity || e.getEntity() instanceof TameableEntity) {
-            if (e.getSource().isProjectile()) {
+            if (e.getSource().isProjectile() && e.getSource().getDirectEntity() instanceof ProjectileEntity) {
                 if (e.getSource().getDirectEntity() != null && ((ProjectileEntity) e.getSource().getDirectEntity()).getOwner() instanceof ServerPlayerEntity) {
                     ServerPlayerEntity attacker = (ServerPlayerEntity) ((ProjectileEntity) e.getSource().getDirectEntity()).getOwner();
                     if (e.getEntity() instanceof ServerPlayerEntity) {
