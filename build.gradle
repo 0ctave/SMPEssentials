@@ -136,3 +136,7 @@ jar.finalizedBy('reobfJar')
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+tasks.register('printVersionName') {
+    println project.version
+}
