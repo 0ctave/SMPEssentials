@@ -240,13 +240,20 @@ public class EventListeners {
 
     @SubscribeEvent
     public void onDamage(LivingAttackEvent e) {
-        if (e.getEntity() instanceof ServerPlayerEntity || e.getEntity() instanceof TameableEntity) {
+        if (e.getEntity() instanceof ServerPlayerEntity) {
             PlayerDataInstance dataInstance = SMPEssentials.getData().getOrCreate(e.getEntity().getUUID());
+
             if (dataInstance.spawnProtectionTicksLeft > 0) {
                 e.setCanceled(true);
+                return;
             } else if (dataInstance.noobProtectionTicksLeft > 0 && e.getSource() != DamageSource.FALL) {
                 e.setCanceled(true);
-            } else if (e.getSource().isProjectile()) {
+                return;
+            }
+        }
+
+        if (e.getEntity() instanceof ServerPlayerEntity || e.getEntity() instanceof TameableEntity) {
+            if (e.getSource().isProjectile()) {
                 if (e.getSource().getDirectEntity() != null && ((ProjectileEntity) e.getSource().getDirectEntity()).getOwner() instanceof ServerPlayerEntity) {
                     ServerPlayerEntity attacker = (ServerPlayerEntity) ((ProjectileEntity) e.getSource().getDirectEntity()).getOwner();
                     if (e.getEntity() instanceof ServerPlayerEntity) {

@@ -1,23 +1,26 @@
-modLoader="javafml"
-loaderVersion="[36,)"
-license="All-Rights-Reserved"
+modLoader = "javafml"
+loaderVersion = "[36,)"
+license = "All-Rights-Reserved"
+issueTrackerURL = "https://github.com/0ctave/SMPEssentials/issues"
+
 [[mods]]
-modId="smpessentials"
-version="1.0"
-displayName="SMP Essentials"
-authors="Khajiitos"
-description='''SMP Essentials'''
+modId = "smpessentials"
+version = "${file.jarVersion}"
+displayName = "SMP Essentials"
+displayURL="https://github.com/0ctave/SMPEssentials/"
+authors = "_Octave, Khajiitos"
+description = '''SMP Essentials'''
 
 [[dependencies.smpessentials]]
-   modId="forge"
-   mandatory=true
-   versionRange="[36,)"
-   ordering="NONE"
-   side="BOTH"
+modId = "forge"
+mandatory = true
+versionRange = "[36,)"
+ordering = "NONE"
+side = "BOTH"
 
 [[dependencies.smpessentials]]
-   modId="minecraft"
-   mandatory=true
-   versionRange="[1.16.5,)"
-   ordering="NONE"
-   side="BOTH"
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.16.5,)"
+ordering = "NONE"
+side = "BOTH"
