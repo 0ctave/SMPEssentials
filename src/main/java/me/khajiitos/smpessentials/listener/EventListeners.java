@@ -119,7 +119,9 @@ public class EventListeners {
                         continue;
                     }
 
-                    if (PVPManager.hasPvpEnabled(player) || PVPManager.hasPvpEnabled(otherPlayer)) {
+                    if (PVPManager.canAttackEachOther(player, otherPlayer)) {
+                        PVPManager.processAttack(player, otherPlayer);
+                    } else {
                         if (e.getPos().distSqr(otherPlayer.blockPosition()) < 3.0) {
                             e.setCanceled(true);
                         }
@@ -140,7 +142,10 @@ public class EventListeners {
                         continue;
                     }
 
-                    if (PVPManager.hasPvpEnabled(player) || PVPManager.hasPvpEnabled(otherPlayer)) {
+                    if (PVPManager.canAttackEachOther(player, otherPlayer)) {
+                        PVPManager.processAttack(player, otherPlayer);
+                    } else {
+
                         if (e.getTarget() instanceof BlockRayTraceResult) {
                             BlockRayTraceResult blockHitResult = (BlockRayTraceResult) e.getTarget();
                             if (blockHitResult.getBlockPos().relative(blockHitResult.getDirection()).distSqr(otherPlayer.blockPosition()) < 3.0) {
@@ -160,7 +165,9 @@ public class EventListeners {
             e.getAffectedEntities().forEach(targetPlayer -> {
                 if (targetPlayer instanceof ServerPlayerEntity) {
                     ServerPlayerEntity target = (ServerPlayerEntity) targetPlayer;
-                    if (!PVPManager.hasPvpEnabled(player) || !PVPManager.hasPvpEnabled(target)) {
+                    if (PVPManager.canAttackEachOther(player, target)) {
+                        PVPManager.processAttack(player, target);
+                    } else {
                         e.getAffectedEntities().remove(targetPlayer);
                     }
                 }
@@ -193,7 +200,8 @@ public class EventListeners {
                         continue;
                     }
 
-                    if (PVPManager.hasPvpEnabled(player) && PVPManager.hasPvpEnabled(otherPlayer)) {
+                    if (!PVPManager.canAttackEachOther(player, otherPlayer)) {
+
                         continue;
                     }
 

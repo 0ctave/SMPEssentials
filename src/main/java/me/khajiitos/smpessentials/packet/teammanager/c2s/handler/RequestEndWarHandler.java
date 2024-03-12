@@ -1,6 +1,5 @@
 package me.khajiitos.smpessentials.packet.teammanager.c2s.handler;
 
-import com.mojang.datafixers.util.Pair;
 import me.khajiitos.smpessentials.data.Team;
 import me.khajiitos.smpessentials.manager.TeamManager;
 import me.khajiitos.smpessentials.packet.teammanager.c2s.RequestEndWarPacket;
@@ -41,31 +40,22 @@ public class RequestEndWarHandler {
 
         UUID requestingTeamUuid = TeamManager.getTeamUuid(requestingTeam);
 
-        for (Pair<UUID, Boolean> pair : team.wars) {
-            if (pair.getFirst().equals(requestingTeamUuid)) {
-                if (pair.getSecond()) {
-                    requestingTeam.wars.removeIf(p -> p.getFirst().equals(packet.team));
-                    team.wars.remove(pair);
 
-                    requestingTeam.broadcast(new StringTextComponent("§4Your team ended war with §c" + team.name + "§4!"));
-                    team.broadcast(new StringTextComponent("§4Your team ended war with §c" + requestingTeam.name + "§4!"));
-                }
-                break;
-            }
+        if (team.wars.containsKey(requestingTeamUuid) && team.wars.get(requestingTeamUuid)) {
+            requestingTeam.wars.remove(packet.team);
+            team.wars.remove(requestingTeamUuid);
+
+            requestingTeam.broadcast(new StringTextComponent("§4Your team ended war with §c" + team.name + "§4!"));
+            team.broadcast(new StringTextComponent("§4Your team ended war with §c" + requestingTeam.name + "§4!"));
         }
 
-        for (Pair<UUID, Boolean> pair : requestingTeam.wars) {
-            if (pair.getFirst().equals(packet.team)) {
-                if (!pair.getSecond()) {
-                    requestingTeam.wars.remove(pair);
-                    requestingTeam.wars.add(new Pair<>(pair.getFirst(), true));
+        if (requestingTeam.wars.containsKey(packet.team) && !requestingTeam.wars.get(packet.team)) {
 
-                    requestingTeam.broadcast(new StringTextComponent("§cYour team requested to end the war with §4" + team.name + "§c!"));
-                    team.broadcast(new StringTextComponent("§c" + requestingTeam.name + " §4requested to end the war with your team!"));
-                }
+            requestingTeam.wars.replace(packet.team, true);
 
-                break;
-            }
+            requestingTeam.broadcast(new StringTextComponent("§cYour team requested to end the war with §4" + team.name + "§c!"));
+            team.broadcast(new StringTextComponent("§c" + requestingTeam.name + " §4requested to end the war with your team!"));
+
         }
 
         RequestWarsHandler.handle(sender);

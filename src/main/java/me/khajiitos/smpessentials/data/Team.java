@@ -1,6 +1,5 @@
 package me.khajiitos.smpessentials.data;
 
-import com.mojang.datafixers.util.Pair;
 import me.khajiitos.smpessentials.SMPEssentials;
 import me.khajiitos.smpessentials.manager.TeamManager;
 import net.minecraft.nbt.CompoundNBT;
@@ -33,7 +32,7 @@ public class Team {
     public CompoundNBT banner; // Color, Patterns
     public HashMap<UUID, Role> members = new HashMap<>();
     public List<UUID> allies = new ArrayList<>();
-    public List<Pair<UUID, Boolean>> wars = new ArrayList<>();
+    public Map<UUID, Boolean> wars = new HashMap<>();
     public boolean friendlyFire = false;
 
     public CompoundNBT save() {
@@ -56,7 +55,7 @@ public class Team {
         tag.put("allies", alliesTag);
 
         ListNBT warsTag = new ListNBT();
-        wars.forEach(uuid -> warsTag.add(StringNBT.valueOf(uuid.toString())));
+        wars.values().forEach(uuid -> warsTag.add(StringNBT.valueOf(uuid.toString())));
         tag.put("wars", warsTag);
 
         return tag;
@@ -96,7 +95,13 @@ public class Team {
         tag.put("allies", alliesTag);
 
         ListNBT warsTag = new ListNBT();
-        wars.forEach(uuid -> warsTag.add(StringNBT.valueOf(uuid.toString())));
+        wars.forEach((uuid, askedToRemove) -> {
+            CompoundNBT war = new CompoundNBT();
+
+            war.put("uuid", StringNBT.valueOf(uuid.toString()));
+            war.putBoolean("askedToRemove", askedToRemove);
+            warsTag.add(war);
+        });
         tag.put("wars", warsTag);
 
         ListNBT requestersTag = new ListNBT();
@@ -213,8 +218,13 @@ public class Team {
         ListNBT warsTag = nbt.getList("wars", Constants.NBT.TAG_STRING);
         warsTag.forEach(tag -> {
             try {
-                UUID uuid = UUID.fromString(tag.getAsString());
-                team.wars.add(Pair.of(uuid, false));
+                if (tag instanceof StringNBT) {
+                    team.wars.put(UUID.fromString(tag.getAsString()), false);
+
+                } else if (tag instanceof CompoundNBT) {
+                    CompoundNBT warTag = (CompoundNBT) tag;
+                    team.wars.put(UUID.fromString(warTag.getString("uuid")), warTag.getBoolean("askedToRemove"));
+                }
             } catch (IllegalArgumentException ignored) {}
         });
         return team;

@@ -11,7 +11,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 
 import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -50,7 +49,7 @@ public class RequestOpenTeamInfoHandler {
                 allyStatus = 1;
             }
 
-            if (senderTeam.wars.stream().anyMatch(pair -> pair.getFirst().equals(packet.team))) {
+            if (senderTeam.wars.containsKey(packet.team)) {
                 warStatus = 2;
             } else if (TeamManager.teamWarInvites.computeIfAbsent(packet.team, uuid -> new HashSet<>()).contains(senderTeamUUID)) {
                 warStatus = 1;

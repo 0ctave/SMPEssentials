@@ -1,6 +1,5 @@
 package me.khajiitos.smpessentials.packet.teammanager.c2s.handler;
 
-import com.mojang.datafixers.util.Pair;
 import me.khajiitos.smpessentials.data.Team;
 import me.khajiitos.smpessentials.manager.TeamManager;
 import me.khajiitos.smpessentials.packet.teammanager.c2s.InviteToWarPacket;
@@ -48,7 +47,7 @@ public class InviteToWarHandler {
         }
 
         // The teams are already at war
-        if (team.wars.stream().anyMatch(pair -> pair.getFirst().equals(packet.teamUuid))) {
+        if (team.wars.containsKey(packet.teamUuid)) {
             return;
         }
 
@@ -59,8 +58,8 @@ public class InviteToWarHandler {
 
         // Check if the invited team already has a pending invite
         if (ourInviters != null && ourInviters.contains(packet.teamUuid)) {
-            team.wars.add(new Pair<>(packet.teamUuid, false));
-            invitedTeam.wars.add(new Pair<>(teamUUID, false));
+            team.wars.put(packet.teamUuid, false);
+            invitedTeam.wars.put(teamUUID, false);
 
             invitedTeam.broadcast(new StringTextComponent("§4Your team is now at war with §c" + team.name + "§4!"));
             team.broadcast(new StringTextComponent("§4Your team is now at war with §c" + invitedTeam.name + "§4!"));

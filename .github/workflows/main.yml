@@ -3,9 +3,7 @@ name: Publish on GitHub, CurseForge & Modrinth    #The name of your GitHub Actio
 on: [ pull_request, workflow_dispatch ]           #When your GitHub Action will be executed ('pull_request' -> on every Merge(/Pull) Request; 'workflow_dispatch' -> allows manual execution through github.com
 
 env:                                              #Environment variables that can later be referenced using ${{ env.MINECRAFT_VERSION }}. These are useful for repeating information and allow for quick changes for new mod updates
-  MINECRAFT_VERSION: 1.16.5                      
-  JAVA_VERSION: 8                   
-  RELEASE_NAME: SMPEssential for 1.16.5
+  JAVA_VERSION: 8
   CURSEFORGE_TOKEN: ${{ secrets.PUBLISH_CURSE_TOKEN }}
   MODRINTH_TOKEN: ${{ secrets.PUBLISH_MODRINTH_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}    
@@ -41,14 +39,20 @@ jobs:                                             #The place where you actually 
       - name: Execute Gradle build
         run: ./gradlew clean build
 
-      - name : Retrieve Version
-        run: |
-          echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew -q printVersionName)"
-        id: version
+      - name: Read properties
+        uses: BrycensRanch/read-properties-action@v1.0.3
+        id: properties
+        with:
+          file: gradle.properties
+          all: true
 
-      - name: Get version
+      - name: Set version
         run: |
-          echo "VERSION=${{steps.version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
+          echo "Setting version to ${{ steps.properties.outputs.mod_version }} + ${{ steps.properties.outputs.mc_version }}"
+          echo "VERSION=${{steps.properties.outputs.mod_version}}" >> $GITHUB_ENV
+          echo "MC_VERSION=${{steps.properties.outputs.mc_version}}" >> $GITHUB_ENV
+
+          echo "Using version ${{env.VERSION}} + ${{env.MC_VERSION}}"
 
       - name: Publish (CurseForge/Modrinth/GitHub)
         uses: Kir-Antipov/mc-publish@v3.3                                   #The specified MC-Publish GitHub Action in the version 3.2
@@ -62,11 +66,11 @@ jobs:                                             #The place where you actually 
           github-tag: "v${{env.VERSION}}"
           github-token: "${{env.GITHUB_TOKEN}}"
 
-          name: "${{env.RELEASE_NAME}}"                             
+          name: "SMP Essentials ${{env.VERSION}} for ${{env.MC_VERSION}}"
           version: "${{env.VERSION}}"
           version-type: release
           changelog-file: CHANGELOG.md                                      #The file in which the changes of your new update are specified (the path starts at your project root)
 
           loaders: forge
-          game-versions: "${{env.MINECRAFT_VERSION}}"
+          game-versions: "${{env.MC_VERSION}}"
           java: "${{env.JAVA_VERSION}}"

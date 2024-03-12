@@ -33,19 +33,19 @@ public class RequestWarsHandler {
         CompoundNBT tag = new CompoundNBT();
 
         ListNBT activeWars = new ListNBT();
-        team.wars.forEach(pair -> {
-            Team warTeam = TeamManager.getTeamByUuid(pair.getFirst());
+        team.wars.forEach((uuid, askedToRemove) -> {
+            Team warTeam = TeamManager.getTeamByUuid(uuid);
 
             if (warTeam == null) {
                 return;
             }
 
             CompoundNBT warTeamTag = new CompoundNBT();
-            warTeamTag.putUUID("uuid", pair.getFirst());
+            warTeamTag.putUUID("uuid", uuid);
             warTeamTag.putString("name", warTeam.name);
             warTeamTag.putString("tag", warTeam.tag);
-            warTeamTag.putBoolean("askedToRemove", pair.getSecond());
-            warTeamTag.putBoolean("theyAskedToRemove", warTeam.wars.stream().anyMatch(p -> p.getFirst().equals(teamUUID) && p.getSecond()));
+            warTeamTag.putBoolean("askedToRemove", askedToRemove);
+            warTeamTag.putBoolean("theyAskedToRemove", warTeam.wars.getOrDefault(teamUUID, false));
 
             activeWars.add(warTeamTag);
         });

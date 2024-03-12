@@ -33,18 +33,18 @@ public class PVPManager {
             return hasPvpEnabled(player1) && hasPvpEnabled(player2) && team1.friendlyFire;
         }
 
-        if (team1.wars.contains(TeamManager.getTeamUuid(team2))) {
+        if (team1.wars.containsKey(TeamManager.getTeamUuid(team2)) || team2.wars.containsKey(TeamManager.getTeamUuid(team1))) {
             return true;
         }
 
         for (UUID ally : team1.allies) {
-            if (team2.wars.contains(ally)) {
+            if (team2.wars.containsKey(ally)) {
                 return true;
             }
         }
 
         for (UUID ally : team2.allies) {
-            if (team1.wars.contains(ally)) {
+            if (team1.wars.containsKey(ally)) {
                 return true;
             }
         }
@@ -64,6 +64,10 @@ public class PVPManager {
         attackerData.spawnProtectionTicksLeft = 0;
         attackerData.noobProtectionTicksLeft = 0;
         SMPEssentials.getData().setDirty();
+
+        if (!hasPvpEnabled(attacker) || !hasPvpEnabled(target)) {
+            SMPEssentials.LOGGER.warn(attacker.getDisplayName().getString() + " attacked " + target.getDisplayName().getString() + " but it should not have been able to");
+        }
     }
 
     public static boolean hasPvpEnabled(UUID playerUUID) {

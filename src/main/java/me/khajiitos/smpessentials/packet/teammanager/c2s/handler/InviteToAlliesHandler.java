@@ -41,7 +41,7 @@ public class InviteToAlliesHandler {
         }
 
         // Don't allow inviting to allies if the teams are at war
-        if (team.wars.stream().anyMatch(pair -> pair.getFirst().equals(packet.teamUuid))) {
+        if (team.wars.containsKey(packet.teamUuid)) {
             return;
         }
 

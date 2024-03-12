@@ -1,6 +1,5 @@
 package me.khajiitos.smpessentials.packet.teammanager.c2s.handler;
 
-import com.mojang.datafixers.util.Pair;
 import me.khajiitos.smpessentials.data.Team;
 import me.khajiitos.smpessentials.manager.TeamManager;
 import me.khajiitos.smpessentials.packet.teammanager.c2s.WarInviteResponsePacket;
@@ -48,8 +47,8 @@ public class WarInviteResponseHandler {
 
         if (teamsInvited.contains(packet.teamUuid)) {
             teamsInvited.remove(packet.teamUuid);
-            team.wars.add(new Pair<>(packet.teamUuid, false));
-            inviter.wars.add(new Pair<>(teamUUID, false));
+            team.wars.put(packet.teamUuid, false);
+            inviter.wars.put(teamUUID, false);
             team.broadcast(new StringTextComponent("§4Your team is now at war with §c" + inviter.name + "§4!"));
             inviter.broadcast(new StringTextComponent("§4Your team is at war with §c" + team.name + "§4!"));
 

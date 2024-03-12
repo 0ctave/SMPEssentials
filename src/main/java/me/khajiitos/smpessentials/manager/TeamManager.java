@@ -43,9 +43,9 @@ public class TeamManager {
     public static void deleteTeam(Team team) {
         UUID thisTeamUuid = getTeamUuid(team);
 
-        team.wars.forEach(pair -> {
-            Team warTeam = getTeamByUuid(pair.getFirst());
-            warTeam.wars.removeIf(warPair -> warPair.getFirst() == thisTeamUuid);
+        team.wars.keySet().forEach(uuid -> {
+            Team warTeam = getTeamByUuid(uuid);
+            warTeam.wars.remove(thisTeamUuid);
         });
 
         team.allies.forEach(uuid -> {

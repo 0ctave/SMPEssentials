@@ -9,6 +9,7 @@ import me.khajiitos.smpessentials.listener.AntiGriefListeners;
 import me.khajiitos.smpessentials.listener.DisplayNameListeners;
 import me.khajiitos.smpessentials.listener.EventListeners;
 import me.khajiitos.smpessentials.listener.LogListeners;
+
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -57,4 +58,5 @@ public class SMPEssentials {
     public static SMPData getData() {
         return server.overworld().getDataStorage().computeIfAbsent(SMPData::new, "smpdata");
     }
+
 }
