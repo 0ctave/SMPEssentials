@@ -41,7 +41,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             property 'forxe.enabledGameTestNamespaces', project.mod_name
 
-            args '--username', 'Dev2'
+            args '--username', 'Dev3'
 
             mods {
                 "${mod_id}" {
@@ -98,6 +98,14 @@ repositories {
         name = 'kotlinforforge'
         url = 'https://thedarkcolour.github.io/KotlinForForge/'
     }
+
+    maven {
+        url 'https://www.cursemaven.com'
+
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 
@@ -107,6 +115,9 @@ dependencies {
 
     implementation "thedarkcolour:kotlinforforge:${project.kotlinforforge_version}"
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
+
+
+    implementation fg.deobf("curse.maven:hardcore-revival-274036:3344257")
 
 }
 

@@ -37,10 +37,14 @@ public class WarsTab extends AbstractTab {
                         String nameStr = compoundTag.getString("name");
                         String tagStr = compoundTag.getString("tag");
                         UUID uuid = compoundTag.getUUID("uuid");
-                        boolean askedToRemove = compoundTag.getBoolean("askedToRemove");
-                        boolean theyAskedToRemove = compoundTag.getBoolean("theyAskedToRemove");
 
-                        this.panel.children().add(new WarEntryWidget(this.parent, 0, 0, this.panel.getWidth() - this.panel.widgetOffset * 2, 25, nameStr, tagStr, uuid, askedToRemove, theyAskedToRemove));
+                        int kills = compoundTag.getInt("kills");
+                        int hp = compoundTag.getInt("HP");
+
+                        boolean askedPeace = compoundTag.getBoolean("askedPeace");
+                        boolean theyAskedPeace = compoundTag.getBoolean("theyAskedPeace");
+
+                        this.panel.children().add(new WarEntryWidget(this.parent, 0, 0, this.panel.getWidth() - this.panel.widgetOffset * 2, 25, nameStr, tagStr, uuid, kills, hp, askedPeace, theyAskedPeace));
                     }
                 });
             }

@@ -9,14 +9,14 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class RequestEndWarPacket {
-    public final UUID team;
+    public final UUID warID;
 
-    public RequestEndWarPacket(UUID team) {
-        this.team = team;
+    public RequestEndWarPacket(UUID warID) {
+        this.warID = warID;
     }
 
     public void encode(PacketBuffer buf) {
-        buf.writeUUID(team);
+        buf.writeUUID(warID);
     }
 
     public static RequestEndWarPacket decode(PacketBuffer buf) {

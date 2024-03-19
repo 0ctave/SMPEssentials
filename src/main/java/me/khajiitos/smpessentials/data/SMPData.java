@@ -14,6 +14,7 @@ import java.util.UUID;
 public class SMPData extends WorldSavedData {
     private final HashMap<UUID, PlayerDataInstance> players = new HashMap<>();
     private final HashMap<UUID, Team> teams = new HashMap<>();
+    private final HashMap<UUID, War> wars = new HashMap<>();
     public final List<CompoundNBT> punishmentLog = new ArrayList<>();
 
     public SMPData() {
@@ -38,6 +39,14 @@ public class SMPData extends WorldSavedData {
         });
         nbt.put("teams", teamsTag);
 
+        CompoundNBT warsTag = new CompoundNBT();
+        wars.forEach((uuid, war) -> {
+            if (uuid != null) {
+                warsTag.put(uuid.toString(), war.save());
+            }
+        });
+        nbt.put("wars", warsTag);
+
         ListNBT punishmentLogTag = new ListNBT();
         punishmentLogTag.addAll(punishmentLog);
         nbt.put("punishment_log", punishmentLogTag);
@@ -56,9 +65,12 @@ public class SMPData extends WorldSavedData {
         return teams;
     }
 
+    public HashMap<UUID, War> getWars() {
+        return wars;
+    }
+
     @Override
     public void load(CompoundNBT nbt) {
-        //SMPData data = new SMPData("smpessentials");
 
         CompoundNBT playersNbt = nbt.getCompound("players");
         playersNbt.getAllKeys().forEach(uuidStr -> {
@@ -76,6 +88,14 @@ public class SMPData extends WorldSavedData {
             } catch (IllegalArgumentException ignored) {}
         });
 
+        CompoundNBT warsNbt = nbt.getCompound("wars");
+        warsNbt.getAllKeys().forEach(uuidStr -> {
+            try {
+                UUID uuid = UUID.fromString(uuidStr);
+                this.wars.put(uuid, War.load(uuid, warsNbt.getCompound(uuidStr)));
+            } catch (IllegalArgumentException ignored) {}
+        });
+
         ListNBT punishmentLogNbt = nbt.getList("punishment_log", Constants.NBT.TAG_COMPOUND);
 
         punishmentLogNbt.forEach(tag -> {
@@ -83,34 +103,6 @@ public class SMPData extends WorldSavedData {
             this.punishmentLog.add(compoundTag);
         });
     }
-
-    /*public static SMPData load(CompoundNBT nbt) {
-        SMPData data = new SMPData();
-
-        CompoundNBT playersNbt = nbt.getCompound("players");
-        playersNbt.getAllKeys().forEach(uuidStr -> {
-            try {
-                UUID uuid = UUID.fromString(uuidStr);
-                data.players.put(uuid, PlayerDataInstance.load(playersNbt.getCompound(uuidStr)));
-            } catch (IllegalArgumentException ignored) {}
-        });
-
-        CompoundNBT teamsNbt = nbt.getCompound("teams");
-        teamsNbt.getAllKeys().forEach(uuidStr -> {
-            try {
-                UUID uuid = UUID.fromString(uuidStr);
-                data.teams.put(uuid, Team.load(teamsNbt.getCompound(uuidStr)));
-            } catch (IllegalArgumentException ignored) {}
-        });
-
-        ListNBT punishmentLogNbt = nbt.getList("punishment_log", Constants.NBT.TAG_COMPOUND);
-
-        punishmentLogNbt.forEach(tag -> {
-            CompoundNBT compoundTag = (CompoundNBT) tag;
-            data.punishmentLog.add(compoundTag);
-        });
-        return data;
-    }*/
 
     public String getUsername(UUID uuid) {
         PlayerDataInstance dataInstance = get(uuid);

@@ -8,6 +8,7 @@ modId = "smpessentials"
 version = "${file.jarVersion}"
 displayName = "SMP Essentials"
 displayURL="https://github.com/0ctave/SMPEssentials/"
+logoFile = "smpe_logo.png"
 authors = "_Octave, Khajiitos"
 description = '''SMP Essentials'''
 

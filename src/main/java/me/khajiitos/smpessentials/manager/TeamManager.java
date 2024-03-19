@@ -2,10 +2,14 @@ package me.khajiitos.smpessentials.manager;
 
 import me.khajiitos.smpessentials.SMPEssentials;
 import me.khajiitos.smpessentials.data.Team;
+import me.khajiitos.smpessentials.data.War;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.management.PlayerList;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TeamManager {
     public static final HashMap<UUID, Set<UUID>> playerInvites = new HashMap<>(); // player -> list of teams the player is invited to
@@ -44,8 +48,8 @@ public class TeamManager {
         UUID thisTeamUuid = getTeamUuid(team);
 
         team.wars.keySet().forEach(uuid -> {
-            Team warTeam = getTeamByUuid(uuid);
-            warTeam.wars.remove(thisTeamUuid);
+            War war = getWars().get(uuid);
+            war.endWar(war.getOtherTeam(uuid), thisTeamUuid);
         });
 
         team.allies.forEach(uuid -> {
@@ -116,6 +120,11 @@ public class TeamManager {
         return false;
     }
 
+    public static void clearInvites(Team team) {
+        UUID teamUuid = getTeamUuid(team);
+        playerInvites.values().forEach(set -> set.remove(teamUuid));
+    }
+
     public static boolean requestToJoinTeam(ServerPlayerEntity player, Team team) {
         Set<UUID> set = teamRequests.computeIfAbsent(getTeamUuid(team), (uuid) -> new HashSet<>());
         UUID playerUUID = player.getUUID();
@@ -124,5 +133,75 @@ public class TeamManager {
             return true;
         }
         return false;
+    }
+
+    public static boolean isAtWar(ServerPlayerEntity player1, ServerPlayerEntity player2) {
+        Team team1 = getTeam(player1);
+        Team team2 = getTeam(player2);
+
+        return areTeamsAtWar(team1, team2);
+    }
+
+    public static HashMap<UUID, Team> getTeams() {
+        return SMPEssentials.getData().getTeams();
+    }
+
+    public static War declareWar(Team blue, Team red) {
+        War war = new War(TeamManager.getTeamUuid(blue), TeamManager.getTeamUuid(red));
+        SMPEssentials.getData().getWars().put(war.warID, war);
+        SMPEssentials.getData().setDirty();
+
+        TeamManager.clearInvites(blue);
+        TeamManager.clearInvites(red);
+
+        blue.wars.putIfAbsent(war.warID, false);
+        red.wars.putIfAbsent(war.warID, false);
+
+        war.blueMaxHP = getMaxHP(red);
+        war.redMaxHP = getMaxHP(blue);
+
+        return war;
+    }
+
+    public static HashMap<UUID, War> getWars() {
+        return SMPEssentials.getData().getWars();
+    }
+
+    public static boolean areTeamsAtWar(UUID team1, UUID team2) {
+        return areTeamsAtWar(getTeamByUuid(team1), getTeamByUuid(team2));
+    }
+
+    public static boolean areTeamsAtWar(Team team1, Team team2) {
+        if (team1 == null || team2 == null) {
+            return false;
+        }
+
+        return team1.wars.keySet().stream().anyMatch(team2.wars.keySet()::contains);
+    }
+
+    public static War getWar(ServerPlayerEntity player1, ServerPlayerEntity player2) {
+        Team team1 = getTeam(player1);
+        Team team2 = getTeam(player2);
+
+        UUID warID = team1.wars.keySet().stream().filter(team2.wars.keySet()::contains).findFirst().get();
+
+        return getWars().get(warID);
+    }
+
+
+    private static int getMaxHP(Team team) {
+
+        //int teamOnline = getTeamOnline(team);
+        //int alliesOnline = team.allies.stream().map(TeamManager::getTeamByUuid).mapToInt(TeamManager::getTeamOnline).sum();
+
+        int teamOnline = team.members.size();
+        int alliesOnline = team.allies.stream().map(TeamManager::getTeamByUuid).mapToInt((ally) -> ally.members.size()).sum();
+
+        return 2 * (teamOnline + alliesOnline);
+    }
+
+    private static int getTeamOnline(Team team) {
+        PlayerList players = ServerLifecycleHooks.getCurrentServer().getPlayerList();
+        return team.members.keySet().stream().map(players::getPlayer).mapToInt(player -> player != null ? 1 : 0).sum();
     }
 }

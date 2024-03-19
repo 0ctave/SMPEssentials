@@ -41,9 +41,14 @@ public class InviteHandler {
 
             if (target == sender) {
                 Packets.sendToPlayer(sender, new ErrorPacket("You can't invite yourself!"));
+            } else if (!team.wars.isEmpty()){
+                Packets.sendToPlayer(sender, new ErrorPacket("Your team is at war, you can't invite anyone until the war ended!"));
             } else if (target != null) {
-                if (TeamManager.getTeam(target) != team) {
-                    if (TeamManager.invitePlayer(target, team)) {
+                Team targetTeam = TeamManager.getTeam(target);
+                if (targetTeam != team) {
+                    if (targetTeam != null && !targetTeam.wars.isEmpty()){
+                        Packets.sendToPlayer(sender, new ErrorPacket("This player's team is at war, you can't invite anyone until the war ended!"));
+                    } else if (TeamManager.invitePlayer(target, team)) {
                         target.sendMessage(new StringTextComponent("§2You have been invited to join §a" + team.name + "§2!"), ChatType.SYSTEM, target.getUUID());
                         team.broadcast(new StringTextComponent("§a" + sender.getScoreboardName() + " §2invited §a" + target.getScoreboardName() + " §2to join the team!"));
                         Packets.sendToPlayer(sender, new OpenTeamManagerPacket(true, team.toNbtForGui()));

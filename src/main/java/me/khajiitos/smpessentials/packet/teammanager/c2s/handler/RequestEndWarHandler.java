@@ -1,6 +1,7 @@
 package me.khajiitos.smpessentials.packet.teammanager.c2s.handler;
 
 import me.khajiitos.smpessentials.data.Team;
+import me.khajiitos.smpessentials.data.War;
 import me.khajiitos.smpessentials.manager.TeamManager;
 import me.khajiitos.smpessentials.packet.teammanager.c2s.RequestEndWarPacket;
 import net.minecraft.util.text.StringTextComponent;
@@ -26,11 +27,13 @@ public class RequestEndWarHandler {
             return;
         }
 
-        Team team = TeamManager.getTeamByUuid(packet.team);
+        War war = TeamManager.getWars().get(packet.warID);
 
-        if (team == null) {
+        if (war == null) {
             return;
         }
+
+        Team enemyTeam = TeamManager.getTeamByUuid(war.getOtherTeam(TeamManager.getTeamUuid(requestingTeam)));
 
         Team.Role role = requestingTeam.members.getOrDefault(sender.getUUID(), Team.Role.MEMBER);
 
@@ -38,23 +41,24 @@ public class RequestEndWarHandler {
             return;
         }
 
-        UUID requestingTeamUuid = TeamManager.getTeamUuid(requestingTeam);
 
+        if (enemyTeam.wars.containsKey(packet.warID) && enemyTeam.wars.get(packet.warID)) {
 
-        if (team.wars.containsKey(requestingTeamUuid) && team.wars.get(requestingTeamUuid)) {
-            requestingTeam.wars.remove(packet.team);
-            team.wars.remove(requestingTeamUuid);
+            requestingTeam.wars.remove(packet.warID);
+            enemyTeam.wars.remove(packet.warID);
 
-            requestingTeam.broadcast(new StringTextComponent("§4Your team ended war with §c" + team.name + "§4!"));
-            team.broadcast(new StringTextComponent("§4Your team ended war with §c" + requestingTeam.name + "§4!"));
+            TeamManager.getWars().remove(packet.warID);
+
+            requestingTeam.broadcast(new StringTextComponent("§4Your team ended war with §c" + enemyTeam.name + "§4!"));
+            enemyTeam.broadcast(new StringTextComponent("§4Your team ended war with §c" + requestingTeam.name + "§4!"));
         }
 
-        if (requestingTeam.wars.containsKey(packet.team) && !requestingTeam.wars.get(packet.team)) {
+        if (requestingTeam.wars.containsKey(packet.warID) && !requestingTeam.wars.get(packet.warID)) {
 
-            requestingTeam.wars.replace(packet.team, true);
+            requestingTeam.wars.replace(packet.warID, true);
 
-            requestingTeam.broadcast(new StringTextComponent("§cYour team requested to end the war with §4" + team.name + "§c!"));
-            team.broadcast(new StringTextComponent("§c" + requestingTeam.name + " §4requested to end the war with your team!"));
+            requestingTeam.broadcast(new StringTextComponent("§cYour team requested to end the war with §4" + enemyTeam.name + "§c!"));
+            enemyTeam.broadcast(new StringTextComponent("§c" + requestingTeam.name + " §4requested to end the war with your team!"));
 
         }
 

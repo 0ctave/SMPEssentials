@@ -3,6 +3,7 @@ package me.khajiitos.smpessentials.manager;
 import me.khajiitos.smpessentials.SMPEssentials;
 import me.khajiitos.smpessentials.data.PlayerDataInstance;
 import me.khajiitos.smpessentials.data.Team;
+import me.khajiitos.smpessentials.data.War;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -33,21 +34,26 @@ public class PVPManager {
             return hasPvpEnabled(player1) && hasPvpEnabled(player2) && team1.friendlyFire;
         }
 
-        if (team1.wars.containsKey(TeamManager.getTeamUuid(team2)) || team2.wars.containsKey(TeamManager.getTeamUuid(team1))) {
+        if (team1.allies.contains(TeamManager.getTeamUuid(team2))) {
+            return hasPvpEnabled(player1) && hasPvpEnabled(player2);
+        }
+
+        if (TeamManager.areTeamsAtWar(team1, team2)) {
             return true;
         }
 
         for (UUID ally : team1.allies) {
-            if (team2.wars.containsKey(ally)) {
+            if (TeamManager.areTeamsAtWar(TeamManager.getTeamByUuid(ally), team2)) {
                 return true;
             }
         }
 
         for (UUID ally : team2.allies) {
-            if (team1.wars.containsKey(ally)) {
+            if (TeamManager.areTeamsAtWar(TeamManager.getTeamByUuid(ally), team1)) {
                 return true;
             }
         }
+
         return hasPvpEnabled(player1) && hasPvpEnabled(player2);
     }
 
@@ -117,5 +123,9 @@ public class PVPManager {
         }
 
         uuidsToRemove.forEach(combatTicksLeft::remove);
+
+        TeamManager.getWars().forEach((uuid, war) -> war.tick());
+        TeamManager.getWars().entrySet().removeIf(entry -> entry.getValue().warEnded);
+
     }
 }

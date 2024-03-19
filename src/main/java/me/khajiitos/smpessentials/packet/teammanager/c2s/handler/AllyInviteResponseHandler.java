@@ -46,7 +46,7 @@ public class AllyInviteResponseHandler {
             return;
         }
 
-        if (team.allies.contains(packet.teamUuid) || team.wars.containsKey(packet.teamUuid)) {
+        if (team.allies.contains(packet.teamUuid) || TeamManager.areTeamsAtWar(teamUUID, packet.teamUuid)) {
             teamsInvited.remove(packet.teamUuid);
             return;
         }

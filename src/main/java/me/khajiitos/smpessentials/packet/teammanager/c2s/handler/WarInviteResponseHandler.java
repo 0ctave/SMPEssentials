@@ -47,8 +47,9 @@ public class WarInviteResponseHandler {
 
         if (teamsInvited.contains(packet.teamUuid)) {
             teamsInvited.remove(packet.teamUuid);
-            team.wars.put(packet.teamUuid, false);
-            inviter.wars.put(teamUUID, false);
+
+            TeamManager.declareWar(inviter, team);
+
             team.broadcast(new StringTextComponent("§4Your team is now at war with §c" + inviter.name + "§4!"));
             inviter.broadcast(new StringTextComponent("§4Your team is at war with §c" + team.name + "§4!"));
 

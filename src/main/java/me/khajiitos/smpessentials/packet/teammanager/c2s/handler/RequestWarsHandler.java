@@ -2,6 +2,7 @@ package me.khajiitos.smpessentials.packet.teammanager.c2s.handler;
 
 import me.khajiitos.smpessentials.Packets;
 import me.khajiitos.smpessentials.data.Team;
+import me.khajiitos.smpessentials.data.War;
 import me.khajiitos.smpessentials.manager.TeamManager;
 import me.khajiitos.smpessentials.packet.teammanager.c2s.RequestWarsPacket;
 import me.khajiitos.smpessentials.packet.teammanager.s2c.WarsPacket;
@@ -30,11 +31,21 @@ public class RequestWarsHandler {
 
         UUID teamUUID = TeamManager.getTeamUuid(team);
 
+        if (teamUUID == null) {
+            return;
+        }
+
         CompoundNBT tag = new CompoundNBT();
 
         ListNBT activeWars = new ListNBT();
-        team.wars.forEach((uuid, askedToRemove) -> {
-            Team warTeam = TeamManager.getTeamByUuid(uuid);
+        team.wars.forEach((uuid, askedPeace) -> {
+            War war = TeamManager.getWars().get(uuid);
+
+            if (war == null) {
+                return;
+            }
+
+            Team warTeam = TeamManager.getTeamByUuid(war.getOtherTeam(teamUUID));
 
             if (warTeam == null) {
                 return;
@@ -44,8 +55,12 @@ public class RequestWarsHandler {
             warTeamTag.putUUID("uuid", uuid);
             warTeamTag.putString("name", warTeam.name);
             warTeamTag.putString("tag", warTeam.tag);
-            warTeamTag.putBoolean("askedToRemove", askedToRemove);
-            warTeamTag.putBoolean("theyAskedToRemove", warTeam.wars.getOrDefault(teamUUID, false));
+
+            warTeamTag.putInt("kills", war.getTeamKills(teamUUID));
+            warTeamTag.putInt("HP", war.getTeamHP(war.getOtherTeam(teamUUID)));
+
+            warTeamTag.putBoolean("askedPeace", askedPeace);
+            warTeamTag.putBoolean("theyAskedPeace", warTeam.wars.getOrDefault(uuid, false));
 
             activeWars.add(warTeamTag);
         });

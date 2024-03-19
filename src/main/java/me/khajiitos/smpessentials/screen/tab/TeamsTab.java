@@ -17,6 +17,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class TeamsTab extends AbstractTab {
     private ListNBT data;
@@ -51,7 +52,7 @@ public class TeamsTab extends AbstractTab {
                             chatFormatting = TextFormatting.DARK_AQUA;
                         } else if (containsString(this.parent.data.getList("allies", Constants.NBT.TAG_STRING), compoundTag.getUUID("uuid").toString())) {
                             chatFormatting = TextFormatting.GREEN;
-                        } else if (containsString(this.parent.data.getList("wars", Constants.NBT.TAG_STRING), compoundTag.getUUID("uuid").toString())) {
+                        } else if (this.parent.data.getCompound("wars").getAllKeys().stream().anyMatch(compoundTag.getCompound("wars").getAllKeys()::contains)) {
                             chatFormatting = TextFormatting.RED;
                         } else {
                             chatFormatting = TextFormatting.WHITE;

@@ -47,7 +47,7 @@ public class InviteToWarHandler {
         }
 
         // The teams are already at war
-        if (team.wars.containsKey(packet.teamUuid)) {
+        if (TeamManager.areTeamsAtWar(team, invitedTeam)) {
             return;
         }
 
@@ -58,8 +58,7 @@ public class InviteToWarHandler {
 
         // Check if the invited team already has a pending invite
         if (ourInviters != null && ourInviters.contains(packet.teamUuid)) {
-            team.wars.put(packet.teamUuid, false);
-            invitedTeam.wars.put(teamUUID, false);
+            TeamManager.declareWar(team, invitedTeam);
 
             invitedTeam.broadcast(new StringTextComponent("§4Your team is now at war with §c" + team.name + "§4!"));
             team.broadcast(new StringTextComponent("§4Your team is now at war with §c" + invitedTeam.name + "§4!"));

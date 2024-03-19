@@ -144,7 +144,6 @@ public abstract class ScrollPanel extends FocusableGui implements IRenderable, I
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        System.out.println("YEEET");
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         } else {

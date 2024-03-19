@@ -1,7 +1,9 @@
 package me.khajiitos.smpessentials.data;
 
+import joptsimple.internal.AbbreviationMap;
 import me.khajiitos.smpessentials.SMPEssentials;
 import me.khajiitos.smpessentials.manager.TeamManager;
+import net.blay09.mods.hardcorerevival.HardcoreRevival;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
@@ -14,6 +16,7 @@ import net.minecraftforge.common.util.Constants;
 import java.util.*;
 
 public class Team {
+
 
     public enum Role {
         MEMBER("Member"),
@@ -32,6 +35,7 @@ public class Team {
     public CompoundNBT banner; // Color, Patterns
     public HashMap<UUID, Role> members = new HashMap<>();
     public List<UUID> allies = new ArrayList<>();
+    //public Map<UUID, Boolean> warInvites = new HashMap<>();
     public Map<UUID, Boolean> wars = new HashMap<>();
     public boolean friendlyFire = false;
 
@@ -54,8 +58,8 @@ public class Team {
         allies.forEach(uuid -> alliesTag.add(StringNBT.valueOf(uuid.toString())));
         tag.put("allies", alliesTag);
 
-        ListNBT warsTag = new ListNBT();
-        wars.values().forEach(uuid -> warsTag.add(StringNBT.valueOf(uuid.toString())));
+        CompoundNBT warsTag = new CompoundNBT();
+        wars.forEach((uuid, askedPeace) -> warsTag.putBoolean(uuid.toString(), askedPeace));
         tag.put("wars", warsTag);
 
         return tag;
@@ -94,14 +98,8 @@ public class Team {
         allies.forEach(uuid -> alliesTag.add(StringNBT.valueOf(uuid.toString())));
         tag.put("allies", alliesTag);
 
-        ListNBT warsTag = new ListNBT();
-        wars.forEach((uuid, askedToRemove) -> {
-            CompoundNBT war = new CompoundNBT();
-
-            war.put("uuid", StringNBT.valueOf(uuid.toString()));
-            war.putBoolean("askedToRemove", askedToRemove);
-            warsTag.add(war);
-        });
+        CompoundNBT warsTag = new CompoundNBT();
+        wars.forEach((uuid, askedPeace) -> warsTag.putBoolean(uuid.toString(), askedPeace));
         tag.put("wars", warsTag);
 
         ListNBT requestersTag = new ListNBT();
@@ -215,16 +213,10 @@ public class Team {
             } catch (IllegalArgumentException ignored) {}
         });
 
-        ListNBT warsTag = nbt.getList("wars", Constants.NBT.TAG_STRING);
-        warsTag.forEach(tag -> {
+        CompoundNBT warsTag = nbt.getCompound("wars");
+        warsTag.getAllKeys().forEach(warID -> {
             try {
-                if (tag instanceof StringNBT) {
-                    team.wars.put(UUID.fromString(tag.getAsString()), false);
-
-                } else if (tag instanceof CompoundNBT) {
-                    CompoundNBT warTag = (CompoundNBT) tag;
-                    team.wars.put(UUID.fromString(warTag.getString("uuid")), warTag.getBoolean("askedToRemove"));
-                }
+                team.wars.put(UUID.fromString(warID), warsTag.getBoolean(warID));
             } catch (IllegalArgumentException ignored) {}
         });
         return team;

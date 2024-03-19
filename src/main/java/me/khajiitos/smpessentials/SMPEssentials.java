@@ -5,10 +5,7 @@ import me.khajiitos.smpessentials.commands.StaffCommands;
 import me.khajiitos.smpessentials.commands.TeamCommands;
 import me.khajiitos.smpessentials.config.Config;
 import me.khajiitos.smpessentials.data.SMPData;
-import me.khajiitos.smpessentials.listener.AntiGriefListeners;
-import me.khajiitos.smpessentials.listener.DisplayNameListeners;
-import me.khajiitos.smpessentials.listener.EventListeners;
-import me.khajiitos.smpessentials.listener.LogListeners;
+import me.khajiitos.smpessentials.listener.*;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -16,6 +13,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import org.apache.logging.log4j.LogManager;
@@ -34,6 +32,10 @@ public class SMPEssentials {
         MinecraftForge.EVENT_BUS.register(new LogListeners());
         MinecraftForge.EVENT_BUS.register(new AntiGriefListeners());
         MinecraftForge.EVENT_BUS.register(new DisplayNameListeners());
+
+        if (ModList.get().isLoaded("hardcorerevival")) {
+            MinecraftForge.EVENT_BUS.register(new KnockoutListener());
+        }
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> SMPEssentialsClient::init);
 

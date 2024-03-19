@@ -4,8 +4,10 @@ import me.khajiitos.smpessentials.Packets;
 import me.khajiitos.smpessentials.SMPEssentials;
 import me.khajiitos.smpessentials.config.Config;
 import me.khajiitos.smpessentials.data.PlayerDataInstance;
+import me.khajiitos.smpessentials.data.Team;
 import me.khajiitos.smpessentials.manager.PVPManager;
 import me.khajiitos.smpessentials.manager.PunishmentManager;
+import me.khajiitos.smpessentials.manager.TeamManager;
 import me.khajiitos.smpessentials.packet.RulesPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -92,7 +94,12 @@ public class EventListeners {
             SMPEssentials.getData().getOrCreate(player.getUUID()).deaths++;
             if (e.getSource().getEntity() instanceof ServerPlayerEntity) {
                 ServerPlayerEntity killer = (ServerPlayerEntity) e.getSource().getEntity();
-                SMPEssentials.getData().getOrCreate(killer.getUUID()).kills++;
+                PlayerDataInstance playerData = SMPEssentials.getData().getOrCreate(killer.getUUID());
+                playerData.kills++;
+
+                if (TeamManager.isAtWar(player, killer)) {
+                    TeamManager.getWar(player, killer).addKill(TeamManager.getTeamUuid(TeamManager.getTeam(killer)));
+                }
             }
             SMPEssentials.getData().setDirty();
         }

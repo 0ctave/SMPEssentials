@@ -49,7 +49,7 @@ public class RequestOpenTeamInfoHandler {
                 allyStatus = 1;
             }
 
-            if (senderTeam.wars.containsKey(packet.team)) {
+            if (TeamManager.areTeamsAtWar(senderTeam, team)) {
                 warStatus = 2;
             } else if (TeamManager.teamWarInvites.computeIfAbsent(packet.team, uuid -> new HashSet<>()).contains(senderTeamUUID)) {
                 warStatus = 1;
