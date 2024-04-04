@@ -4,7 +4,6 @@ import me.khajiitos.smpessentials.Packets;
 import me.khajiitos.smpessentials.SMPEssentials;
 import me.khajiitos.smpessentials.config.Config;
 import me.khajiitos.smpessentials.data.PlayerDataInstance;
-import me.khajiitos.smpessentials.data.Team;
 import me.khajiitos.smpessentials.manager.PVPManager;
 import me.khajiitos.smpessentials.manager.PunishmentManager;
 import me.khajiitos.smpessentials.manager.TeamManager;
@@ -12,23 +11,26 @@ import me.khajiitos.smpessentials.packet.RulesPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.potion.EffectType;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.EntityTeleportEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -121,17 +123,16 @@ public class EventListeners {
             ServerPlayerEntity player = (ServerPlayerEntity) e.getEntity();
             MinecraftServer server = player.getServer();
             if (server != null) {
-                for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerList().getPlayers()) {
-                    if (otherPlayer == player) {
-                        continue;
-                    }
 
+                BlockPos blockPos = e.getPos();
+
+                List<ServerPlayerEntity> playerCandidates = player.getLevel().getPlayers((otherPlayer) -> otherPlayer != player && Math.sqrt(otherPlayer.position().distanceToSqr(blockPos.getX(), blockPos.getY(), blockPos.getZ())) < 2.0);
+
+                for (ServerPlayerEntity otherPlayer : playerCandidates) {
                     if (PVPManager.canAttackEachOther(player, otherPlayer)) {
                         PVPManager.processAttack(player, otherPlayer);
                     } else {
-                        if (e.getPos().distSqr(otherPlayer.blockPosition()) < 3.0) {
-                            e.setCanceled(true);
-                        }
+                        e.setCanceled(true);
                     }
                 }
             }
@@ -144,21 +145,20 @@ public class EventListeners {
             ServerPlayerEntity player = (ServerPlayerEntity) e.getEntity();
             MinecraftServer server = player.getServer();
             if (server != null) {
-                for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerList().getPlayers()) {
-                    if (otherPlayer == player) {
-                        continue;
-                    }
+                if (!(e.getTarget() instanceof BlockRayTraceResult)) {
+                    return;
+                }
 
+                BlockRayTraceResult blockHitResult = (BlockRayTraceResult) e.getTarget();
+                Vector3i sourcePos = blockHitResult.getBlockPos().relative(blockHitResult.getDirection());
+
+                List<ServerPlayerEntity> playerCandidates = player.getLevel().getPlayers((otherPlayer) -> otherPlayer != player && Math.sqrt(otherPlayer.position().distanceToSqr(sourcePos.getX(), sourcePos.getY(), sourcePos.getZ())) < 4.0);
+
+                for (ServerPlayerEntity otherPlayer : playerCandidates) {
                     if (PVPManager.canAttackEachOther(player, otherPlayer)) {
                         PVPManager.processAttack(player, otherPlayer);
                     } else {
-
-                        if (e.getTarget() instanceof BlockRayTraceResult) {
-                            BlockRayTraceResult blockHitResult = (BlockRayTraceResult) e.getTarget();
-                            if (blockHitResult.getBlockPos().relative(blockHitResult.getDirection()).distSqr(otherPlayer.blockPosition()) < 3.0) {
-                                e.setCanceled(true);
-                            }
-                        }
+                        e.setCanceled(true);
                     }
                 }
             }
@@ -198,25 +198,16 @@ public class EventListeners {
             ServerPlayerEntity player = (ServerPlayerEntity) e.getPlayer();
             MinecraftServer server = player.getServer();
             if (server != null) {
-                for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerList().getPlayers()) {
-                    if (otherPlayer == player) {
-                        continue;
-                    }
 
-                    if (otherPlayer.getLevel() != player.getLevel()) {
-                        continue;
-                    }
+                BlockPos blockPos = e.getPos();
 
-                    if (!PVPManager.canAttackEachOther(player, otherPlayer)) {
+                List<ServerPlayerEntity> playerCandidates = player.getLevel().getPlayers((otherPlayer) -> otherPlayer != player && blockPos.equals(otherPlayer.blockPosition().below()));
 
-                        continue;
-                    }
-
-                    BlockPos blockBelow = otherPlayer.blockPosition().below();
-
-                    if (e.getPos().equals(blockBelow) && !player.getLevel().getBlockState(blockBelow.below()).entityCanStandOn(player.getLevel(), blockBelow.below(), player)) {
+                for (ServerPlayerEntity otherPlayer : playerCandidates) {
+                    if (PVPManager.canAttackEachOther(player, otherPlayer)) {
+                        PVPManager.processAttack(player, otherPlayer);
+                    } else {
                         e.setCanceled(true);
-                        return;
                     }
                 }
             }

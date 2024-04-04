@@ -6,10 +6,24 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [[2.0.5](https://github.com/0ctave/SMPEssentials/releases/tag/v2.0.4)] - 2024-03-19
+## [[2.0.6](https://github.com/0ctave/SMPEssentials/releases/tag/v2.0.6)] - 2024-04-04
+
+SMP Essentials 2.0.6 patch release that includes the following changes:
+
+### Changed
+
+- The radius of the lava bucket/block placement protection has been slightly increased to 4 and 2 units of distance respectively.
+
+### Fixed
+
+- Team members can't leave a team at War anymore.
+- Fixed block breaking under a player protection, you won't be able to break the block under a player that has pvp off.
+- Fixed bucket pvp protection, bucket uses don't trigger the 'in combat' status anymore on every players.
+
+
+## [[2.0.5](https://github.com/0ctave/SMPEssentials/releases/tag/v2.0.5)] - 2024-03-19
 
 SMP Essentials 2.0.5 is a patch release that includes the following changes:
-
 
 ### Added
 

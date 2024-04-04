@@ -6,6 +6,7 @@ import me.khajiitos.smpessentials.data.Team;
 import me.khajiitos.smpessentials.manager.TeamManager;
 import me.khajiitos.smpessentials.packet.OpenTeamManagerPacket;
 import me.khajiitos.smpessentials.packet.teammanager.c2s.LeaveTeamPacket;
+import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -27,6 +28,11 @@ public class LeaveTeamHandler {
         Team team = TeamManager.getTeam(sender);
 
         if (team == null) {
+            return;
+        }
+
+        if (!team.wars.isEmpty()){
+            sender.sendMessage(new StringTextComponent("§cYou can't leave a team while at war!"), ChatType.SYSTEM, sender.getUUID());
             return;
         }
 
