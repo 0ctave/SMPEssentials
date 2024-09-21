@@ -117,7 +117,8 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
 
-    implementation fg.deobf("curse.maven:hardcore-revival-274036:3344257")
+    compileOnly fg.deobf("curse.maven:hardcore-revival-274036:3344257")
+    implementation fg.deobf("curse.maven:the-abyss-chapter-ii-440647:3776944")
 
 }
 

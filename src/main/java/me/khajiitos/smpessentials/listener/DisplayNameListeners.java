@@ -41,7 +41,7 @@ public class DisplayNameListeners {
         }
     }
 
-    private ITextComponent getDisplayName(PlayerEntity player) {
+    public static ITextComponent getDisplayName(PlayerEntity player) {
         CustomPlayerSynchedData data = (CustomPlayerSynchedData) player;
         boolean staff = data.isStaff();
         boolean pvp = data.isPvpOn();

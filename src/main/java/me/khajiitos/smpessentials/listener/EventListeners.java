@@ -79,7 +79,7 @@ public class EventListeners {
                     }
                 } else if (targetEntity instanceof TameableEntity) {
                     TameableEntity tamable = (TameableEntity) targetEntity;
-                    if (tamable.getOwnerUUID() != null && !PVPManager.canAttackEachOther(tamable.getOwnerUUID(), attacker.getUUID())) {
+                    if (tamable.getOwnerUUID() != null && tamable.getOwnerUUID() != attacker.getUUID() && !PVPManager.canAttackEachOther(tamable.getOwnerUUID(), attacker.getUUID())) {
                         e.setCanceled(true);
                     }
                 }
@@ -271,7 +271,7 @@ public class EventListeners {
                         }
                     } else if(e.getEntity() instanceof TameableEntity) {
                         TameableEntity tamable = (TameableEntity) e.getEntity();
-                        if (tamable.getOwnerUUID() != null && !PVPManager.canAttackEachOther(tamable.getOwnerUUID(), attacker.getUUID())) {
+                        if (tamable.getOwnerUUID() != null && tamable.getOwnerUUID() != attacker.getUUID() && !PVPManager.canAttackEachOther(tamable.getOwnerUUID(), attacker.getUUID())) {
                             e.setCanceled(true);
                         }
                     }
@@ -315,7 +315,7 @@ public class EventListeners {
                                 }
                             } else if (livingentity instanceof TameableEntity) {
                                 TameableEntity tamable = (TameableEntity) livingentity;
-                                if (tamable.getOwnerUUID() != null && !PVPManager.canAttackEachOther(tamable.getOwnerUUID(), attacker.getUUID())) {
+                                if (tamable.getOwnerUUID() != null && tamable.getOwnerUUID() != attacker.getUUID() && !PVPManager.canAttackEachOther(tamable.getOwnerUUID(), attacker.getUUID())) {
                                     e.setCanceled(true);
                                 }
                             }

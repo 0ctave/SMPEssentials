@@ -96,12 +96,12 @@ public class AntiGriefListeners {
         if (e.getEntity() instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) e.getEntity();
             if (PVPManager.isInCombat(player))
-            for (JsonElement element : Config.preventedItemsInCombat) {
-                if (element.getAsString().equals(registryName.toString())) {
-                    e.setCanceled(true);
-                    break;
+                for (JsonElement element : Config.preventedItemsInCombat) {
+                    if (element.getAsString().equals(registryName.toString())) {
+                        e.setCanceled(true);
+                        break;
+                    }
                 }
-            }
         }
     }
 

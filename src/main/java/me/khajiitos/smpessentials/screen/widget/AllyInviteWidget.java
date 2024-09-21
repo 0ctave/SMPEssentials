@@ -1,6 +1,5 @@
 package me.khajiitos.smpessentials.screen.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.khajiitos.smpessentials.Packets;
 import me.khajiitos.smpessentials.SMPEssentials;

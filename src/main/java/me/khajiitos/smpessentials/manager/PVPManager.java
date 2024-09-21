@@ -23,6 +23,10 @@ public class PVPManager {
     }
 
     public static boolean canAttackEachOther(UUID player1, UUID player2) {
+        if (player1.equals(player2)) {
+            return true;
+        }
+
         Team team1 = TeamManager.getTeam(player1);
         Team team2 = TeamManager.getTeam(player2);
 

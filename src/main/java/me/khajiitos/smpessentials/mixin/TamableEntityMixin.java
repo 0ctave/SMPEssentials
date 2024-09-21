@@ -25,12 +25,10 @@ public abstract class TamableEntityMixin {
     public void canAttack(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
         if (entity instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) entity;
-            if (this.getOwnerUUID() != null) {
-                if (!PVPManager.canAttackEachOther(player.getUUID(), this.getOwnerUUID())) {
-                    cir.setReturnValue(false);
-                }
+            if (this.getOwnerUUID() == null) {
+                cir.setReturnValue(true);
             } else {
-                if (!PVPManager.hasPvpEnabled(player)) {
+                if (!PVPManager.canAttackEachOther(player.getUUID(), this.getOwnerUUID())) {
                     cir.setReturnValue(false);
                 }
             }
